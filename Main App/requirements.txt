@@ -1,0 +1,107 @@
+# We need to write this at the top if we want to deploy this project using streamlit because 90% streamlit deployment fails if we write this streamlit below on requirements.txt file
+streamlit==1.54.0   # basic frontend library
+streamlit-webrtc==0.64.5
+
+mediapipe==0.10.14
+
+opencv-python-headless==4.10.0.84
+
+pandas==2.2.3
+
+groq>=0.12.0
+
+gtts==2.5.3
+
+python-dotenv==1.2.2
+
+
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Here we need to named this file as "requirements.txt" only because it is convention
+# As during deployment using Streamlit, streamlit searches for this 'requirements.txt' file to install all the libraries required 
+# A requirements.txt file is used to list all the Python packages your project depends on, so anyone can recreate the same environment easily.
+
+# To recreate the environment on another machine :-
+#---------------OR---------------------
+# To install the libraries that we want, we can write them in this "requirements.txt" file then do this :-
+# pip install -r requirements.txt
+
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Streamlit :-
+# Streamlit is an open‑source Python framework designed to make it easy to build and share data apps, dashboards, and interactive machine learning demos with just a few lines of code.
+
+# What Streamlit does :-
+# - Lets you turn a Python script into a web app instantly.
+# - Focuses on simplicity — you don’t need HTML, CSS, or JavaScript.
+# - Perfect for data scientists, ML engineers, and analysts who want to showcase models or visualizations interactively.
+
+# Key Features :-
+# - Widgets: Sliders, buttons, text inputs, file uploaders.
+# - Charts: Native support for Matplotlib, Plotly, Altair, and more.
+# - Live updates: Apps auto‑refresh when you change code.
+# - Deployment: Easy to share via Streamlit Cloud or run locally.
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# streamlit-webrtc :-
+# It’s a Streamlit component that enables real-time audio/video streaming in Streamlit apps using WebRTC (Web Real-Time Communication).
+# Lets you add features like:
+# Video chat inside a Streamlit app.
+# Audio streaming and processing (e.g., speech recognition).
+# Real-time computer vision (e.g., face detection, object tracking).
+# Useful for AI/ML demos, interactive dashboards, or live communication tools.
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# mediapipe==0.10.14 :-
+# it is Google’s MediaPipe framework for building multimodal ML pipelines.
+
+# Key Uses:
+# Computer vision tasks: face detection, hand tracking, pose estimation.
+# Audio processing: speech recognition, sound classification.
+# Cross-platform: works on Python, C++, mobile, and web.
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# opencv-python-headless==4.10.0.84 :-
+# What it is: A headless build of OpenCV (no GUI features like imshow, highgui, or video display windows).
+
+# Key Uses:
+# Image and video processing in server environments.
+# Works well in cloud/production setups where GUI support isn’t available.
+# Provides core OpenCV functionality (filters, transformations, object detection).
+
+# Why headless:
+# Saves space and dependencies (no need for Qt or GTK).
+# Ideal for Streamlit, Flask, FastAPI, or other web apps where you don’t need to open native windows.
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# groq>=0.12.0 :-
+# What it is: The official Python client for Groq, a company building ultra-fast AI inference hardware and APIs.
+# Purpose: Lets you interact with Groq’s LLMs (similar to OpenAI’s openai package).
+# Use case: Running AI models with low latency, often for chatbots, text generation, or inference pipelines.
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# gtts==2.5.3 :- 
+# What it is: Google Text-to-Speech library.
+# Purpose: Converts text into spoken audio using Google Translate’s TTS API.
+# Use case: Generate .mp3 files from text, useful for voice assistants, accessibility tools, or narration.
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# python-dotenv==1.2.2 :- 
+# What it is: A library to load environment variables from a .env file into Python’s os.environ.
+# Purpose: Keeps secrets (API keys, DB credentials) out of code.
+# Use case: Managing configuration securely in projects.
+
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
