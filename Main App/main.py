@@ -19,11 +19,14 @@
 # - Live updates: Apps auto‑refresh when you change code.
 # - Deployment: Easy to share via Streamlit Cloud or run locally.
 
+# Imports Python’s built-in OS module. Used here to check if the CSS file exists on disk (os.path.exists(file_path)).
+import os
 import streamlit as st
 
 from services.auth.login_wall import render_login_wall
 from services.state.session_defaults import initial_session_defaults
 from services.config.workout_config import EXERCISE_OPTIONS
+from services.ui.style_loader import load_css, inject_local_font
 
 
 
@@ -35,6 +38,21 @@ def main():
         initial_sidebar_state="expanded",
         layout="centered"
     )
+
+
+    # os.getcwd() :- Returns the current working directory (the folder where your app is running).
+    # os.path.join(os.getcwd(), "static", "style.css")  :- Joins the current directory with "static/style.css". This builds a full file path to your CSS file inside a static folder.
+    # load_css(...) :- Calls our helper function load_css (which you defined earlier).
+    # That function: Checks if the file exists. Reads the CSS file. Injects its contents into your Streamlit app using st.markdown("<style>...</style>").
+    load_css(os.path.join(os.getcwd(), "static", "style.css"))
+    
+    # os.path.join(os.getcwd(), "static", "AdobeClean.otf") :- Builds the full path to the font file inside our static folder.
+    # Example result: /Users/Arpit/Projects/CoachX/static/AdobeClean.otf.
+    # inject_local_font(..., "AdobeClean") :- Calls our custom function inject_local_font.
+    # Parameters: Font path → the actual file location of AdobeClean.otf.
+    # Font name → the name we want to assign in CSS ("AdobeClean").
+    # Inside the function: Reads the font file in binary. Encodes it as Base64. Injects it into your Streamlit app via a CSS @font-face rule.
+    inject_local_font(os.path.join(os.getcwd(), "static", "AdobeClean.otf"), "AdobeClean")
 
 
     if not render_login_wall():
