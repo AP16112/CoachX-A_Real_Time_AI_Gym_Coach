@@ -21,6 +21,7 @@
 
 import streamlit as st
 
+from services.auth.login_wall import render_login_wall
 
 
 
@@ -28,12 +29,15 @@ def main():
     st.set_page_config(
         page_title="CoachX : A Real-time AI Gym Coach",     # page_title sets the browser tab title
         page_icon="🏋️‍♀️",        # small icon visible before this page_title
+        initial_sidebar_state="expanded",
+        layout="centered"
     )
 
 
-    st.title("CoachX : A Real-time AI Gym Coach")      # It is similar to h1 tag of html
+    if not render_login_wall():
+        return
 
-    st.write("Basic streamlit app setup successful")
+    st.write("Hello!")
 
 
 
