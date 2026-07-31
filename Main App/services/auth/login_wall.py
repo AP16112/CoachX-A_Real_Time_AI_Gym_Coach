@@ -2,7 +2,7 @@
 # Login Form UI :-
 
 import streamlit as st
-
+from services.persistence.exercise_repository import get_or_create_user
 
 
 # The function ensures that : If a user is already logged in (user_id exists in session state), they skip the login form. If not, the app shows a registration/login form to capture a username.
@@ -34,8 +34,11 @@ def render_login_wall():
             st.error("Name cannot be empty.")
             return False
         
-        st.session_state["username"] = username
-        st.session_state["user_id"] = "1"
+        # So if user doesn't exists, then we will either create that user or if it's exists then we will get that user
+        user = get_or_create_user(username)
+        
+        st.session_state["username"] = user["username"]
+        st.session_state["user_id"] = user["id"]
 
         st.rerun()
 

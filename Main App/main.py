@@ -27,6 +27,7 @@ from services.auth.login_wall import render_login_wall
 from services.state.session_defaults import initial_session_defaults
 from services.config.workout_config import EXERCISE_OPTIONS
 from services.ui.style_loader import load_css, inject_local_font
+from services.persistence.exercise_repository import init_db
 
 
 
@@ -54,6 +55,8 @@ def main():
     # Inside the function: Reads the font file in binary. Encodes it as Base64. Injects it into your Streamlit app via a CSS @font-face rule.
     inject_local_font(os.path.join(os.getcwd(), "static", "AdobeClean.otf"), "AdobeClean")
 
+
+    init_db()      # we are initializing the db i.e created the DB tables
 
     if not render_login_wall():
         return
