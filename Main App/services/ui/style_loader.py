@@ -6,6 +6,14 @@ import streamlit as st
 import base64
 # Imports Python’s base64 encoding module. It is often helpful if you want to embed images, fonts, or other assets directly into CSS/HTML by encoding them.
  
+import streamlit.components.v1 as components
+# streamlit.components.v1 is a module that lets you embed or build custom frontend components inside Streamlit apps.
+# These components can be:
+# Static HTML/JS snippets (like embedding an iframe, widget, or chart).
+# Custom-built React/JS apps that communicate with Streamlit’s Python backend.
+# When you import it as components, you gain access to functions like components.html() and components.declare_component().
+
+
 
 def load_css(file_path):
     # Checks if the given CSS file actually exists at the specified path. Prevents errors if the file is missing.
@@ -70,4 +78,91 @@ def inject_local_font(font_path, font_name):
     # {encoded} → The Base64-encoded font data (binary converted to text).
     # format('{fmt}') → The font format (e.g., opentype, truetype).
 
+
+
+
+# This function is a custom style injector for Streamlit’s WebRTC component.
+def inject_webrtc_styles():
+    font_path = os.path.join(os.getcwd(), "static", "AdobeClean.otf")
+    
+    if not os.path.exists(font_path):
+        return
+
+    with open(font_path, "rb") as font_file:
+        encoded_font = base64.b64encode(font_file.read()).decode()
+
+
+    # Uses components.html() to insert a <script> block  i.e JavaScript logic into the Streamlit app.
+    # The script runs immediately (IIFE — Immediately Invoked Function Expression).
+    components.html(
+    f"""
+        <script>
+        (function patchWebRTCStyles() {{
+            // Function to inject custom styles into a given iframe
+            function injectIntoIframe(iframe) {{
+                try {{
+                    // Get the iframe's document object
+                    const doc = iframe.contentDocument || iframe.contentWindow.document;
+                    if (!doc || !doc.head) return; // If no document/head, exit
+
+                    // Prevent duplicate injection by checking if style already exists
+                    if (doc.head.querySelector('#webrtc-custom-styles')) return;
+
+                    // Create a <style> element
+                    const style = doc.createElement('style');
+                    style.id = 'webrtc-custom-styles'; // Assign an ID for tracking
+
+                    // Define CSS rules including custom font and button styling
+                    style.textContent = `
+                        @font-face {{
+                            font-family: 'AdobeClean';
+                            src: url('data:font/otf;base64,{encoded_font}') format('opentype');
+                            font-weight: 100 900;
+                            font-style: normal;
+                        }}
+                        .MuiButtonBase-root,
+                        .MuiButton-root,
+                        .MuiButton-contained,
+                        .MuiButton-text {{
+                            border-radius: 0 !important;              /* Remove rounded corners */
+                            font-family: 'AdobeClean', sans-serif !important; /* Apply custom font */
+                            letter-spacing: 0.05em !important;        /* Adjust spacing for readability */
+                        }}
+                    `;
+
+                    // Append the style element to the iframe's <head>
+                    doc.head.appendChild(style);
+                }} catch (e) {{
+                    // Log warning if injection fails
+                    console.warn('[patcher] could not inject:', e);
+                }}
+            }}
+
+            // Function to find all WebRTC iframes and patch them
+            function findAndPatch() {{
+                const parentDoc = window.parent.document; // Get parent document
+                const iframes = parentDoc.querySelectorAll('iframe'); // Find all iframes
+
+                // Loop through each iframe
+                iframes.forEach(iframe => {{
+                    // Only target iframes related to WebRTC
+                    if (iframe.src && iframe.src.includes('webrtc')) {{
+                        // If iframe is already loaded, inject immediately
+                        if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {{
+                            injectIntoIframe(iframe);
+                        }} else {{
+                            // Otherwise, wait until iframe finishes loading
+                            iframe.addEventListener('load', () => injectIntoIframe(iframe));
+                        }}
+                    }}
+                }});
+            }}
+
+            // Run the patching process immediately
+            findAndPatch();
+        }})();
+        </script>
+    """,
+    height=0,  # No visible height since this is just injecting styles
+)
 

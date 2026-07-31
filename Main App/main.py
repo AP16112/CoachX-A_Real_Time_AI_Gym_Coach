@@ -26,8 +26,34 @@ import streamlit as st
 from services.auth.login_wall import render_login_wall
 from services.state.session_defaults import initial_session_defaults
 from services.config.workout_config import EXERCISE_OPTIONS
-from services.ui.style_loader import load_css, inject_local_font
+from services.ui.style_loader import load_css, inject_local_font, inject_webrtc_styles
 from services.persistence.exercise_repository import init_db
+from streamlit_webrtc import webrtc_streamer, WebRtcMode
+
+# What is streamlit_webrtc? :-
+# It’s a Streamlit component that lets you use WebRTC inside Streamlit apps.
+# WebRTC enables real‑time audio, video, and data streaming directly in the browser.
+# This package bridges Streamlit (Python) with WebRTC (browser APIs) so you can build apps like video chat, live audio processing, or computer vision demos.
+
+# webrtc_streamer :-
+# It Creates a WebRTC connection between the browser and your Streamlit backend.
+# Usage: You call webrtc_streamer() inside your Streamlit app to start capturing video/audio from the user’s device.
+# Features:
+# Access webcam and microphone streams.
+# Process frames in Python (e.g., apply OpenCV, face detection, ML models).
+# Send processed video/audio back to the browser.
+# Can also handle data channels for custom peer‑to‑peer messaging.
+
+# WebRtcMode :-
+# This enum defines the connection mode:
+# SENDONLY → Browser → Streamlit (one‑way stream).
+# Example: User uploads webcam feed for ML processing, but doesn’t receive video back.
+# RECVONLY → Streamlit → Browser (one‑way stream).
+# Example: Server streams a video feed to the user (like a broadcast).
+# SENDRECV → Two‑way (peer‑to‑peer style).
+# Example: Video chat app — both sides send and receive audio/video.
+# DATA → Data channel only (no audio/video).
+# Example: Real‑time messaging or sending sensor data.
 
 
 
@@ -96,7 +122,7 @@ def main():
             # Blank space for layout spacing
             st.markdown("")
 
-            start_session_button = st.button("Start Session", width="stretch", key="start_session_button")
+            start_session_button = st.button("Start Workout", width="stretch", key="start_session_button")
 
             if start_session_button:
                 st.session_state["workout_started"] = True
@@ -111,7 +137,7 @@ def main():
             # Display the current workout plan in an info box
             st.info(f"**{exercise}** -- {sets} Sets x {reps} Reps")
 
-            end_session_button = st.button("End Session", key="end_session_button", width="stretch")
+            end_session_button = st.button("End Workout", key="end_session_button", width="stretch")
 
             if end_session_button:
                 st.session_state["workout_started"] = False
@@ -171,6 +197,74 @@ def main():
                 st.metric("Balance Status", st.session_state.balance_status)
 
 
+    st.title("CoachX : A Real-time AI Gym Coach")
+    st.markdown("#### Real-time pose detection with proactive AI voice coaching")
+
+
+    if not workout_started:
+        st.markdown(
+            """
+            <div style="
+                border: 10px dashed #444;
+                border-radius: 0px;
+                padding: 48px 32px;
+                text-align: center;
+                color: #888;
+                margin-top: 32px;
+                margin-bottom: 32px;
+            ">
+                <h2 style="color:#ccc; margin-bottom:8px;">👈 Set your workout plan</h2>
+                <p style="font-size:1.05rem;">
+                    Choose your exercise, sets and reps in the sidebar,<br>
+                    then click <strong>Start Workout</strong> to activate the camera and AI coach.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else: 
+        context = webrtc_streamer(
+            key="exercise-analysis",    # A unique identifier for this WebRTC component inside Streamlit. Prevents conflicts if you have multiple webrtc_streamer instances in the same app.
+            mode=WebRtcMode.SENDRECV,
+
+            
+            video_processor_factory=None,
+            rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+            media_stream_constraints={
+                "video": True,
+                "audio": False
+            },
+            async_processing=True
+        )
+
+        # video_processor_factory=VideoProcessorClass :-
+        # Connects a custom Python class that processes video frames.
+        # Example: VideoProcessorClass could run pose detection, exercise form analysis, or ML models on each frame.
+        # Streamlit passes frames from the webcam → your class → processed output → back to browser
+
+        # rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]} :-
+        # Configures ICE servers for WebRTC.
+        # STUN server (stun:stun.l.google.com:19302) helps peers discover their public IP/port (NAT traversal).
+        # Without this, WebRTC peers might fail to connect across different networks.
+
+        # media_stream_constraints={"video": True, "audio": False} :-
+        # Tells the browser what media streams to capture:
+        # video: True → capture webcam video.
+        # audio: False → disable microphone (no audio stream).
+        # Useful when you only need video analysis (like exercise posture detection).
+
+        # async_processing=True :- 
+        # Enables asynchronous frame processing.
+        # Prevents blocking the main Streamlit thread while heavy ML/computer vision tasks run.
+        # Ensures smoother UI and real‑time responsiveness.
+
+    
+    st.markdown("#### Workout History")
+
+    inject_webrtc_styles()
+
+
+
 
 
 
@@ -191,7 +285,10 @@ if __name__ == "__main__":
 
 
 
-
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# To run any streamlit application , we use this :-
+# streamlit run your_script.py
+# Here we will use this :- streamlit run main.py
 
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -227,8 +324,22 @@ if __name__ == "__main__":
 # __init__.py file acts as the reception desk of a building (package). It decides what’s visible and accessible when someone enters.
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# To run any streamlit application , we use this :-
-# streamlit run your_script.py
-# Here we will use this :- streamlit run main.py
+# Differences Between WebRTC and WebSockets :-
+# WebRTC is best for peer‑to‑peer audio, video, and real‑time data transfer, while WebSockets are ideal for client‑server messaging like chat, notifications, and live updates. They’re often used together — WebSockets handle signaling, and WebRTC manages the actual media/data streams.
+# WebRTC uses TCP protocol & WebSockets uses UDP protocol.
+# UDP is faster because it doesn't guaranted full transfer of data i.e it can drop some frames also of video & due to which it is faster
+# But TCP is slower but more secure as it guaranted full transfer of data, so that's why we are using it here as we do not want video frames to droped during transmission
 
 
+# When to Use Each :-
+# Use WebSockets if:
+# You need persistent client‑server messaging (e.g., chat, live dashboards, multiplayer game state sync).
+# Your data is primarily text or binary frames.
+# You want simpler setup and don’t need audio/video.
+
+# Use WebRTC if:
+# You need real‑time audio/video streaming (video conferencing, telehealth, live streaming).
+# You want peer‑to‑peer data transfer (file sharing, gaming).
+# You require built‑in NAT traversal and encryption.
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
