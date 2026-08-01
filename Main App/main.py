@@ -29,6 +29,8 @@ from services.config.workout_config import EXERCISE_OPTIONS
 from services.ui.style_loader import load_css, inject_local_font, inject_webrtc_styles
 from services.persistence.exercise_repository import init_db
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
+from services.vision.exercise_video_processor import VideoProcessorClass
+
 
 # What is streamlit_webrtc? :-
 # It’s a Streamlit component that lets you use WebRTC inside Streamlit apps.
@@ -227,8 +229,7 @@ def main():
             key="exercise-analysis",    # A unique identifier for this WebRTC component inside Streamlit. Prevents conflicts if you have multiple webrtc_streamer instances in the same app.
             mode=WebRtcMode.SENDRECV,
 
-            
-            video_processor_factory=None,
+            video_processor_factory=VideoProcessorClass,     # This parameter connects a custom Python class (VideoProcessorClass) that processes video frames. It allows you to run pose detection, exercise form analysis, or ML models on each frame captured from the webcam. Streamlit passes frames from the webcam → your class → processed output → back to the browser.
             rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
             media_stream_constraints={
                 "video": True,
@@ -236,6 +237,8 @@ def main():
             },
             async_processing=True
         )
+
+        inject_webrtc_styles()
 
         # video_processor_factory=VideoProcessorClass :-
         # Connects a custom Python class that processes video frames.
@@ -259,9 +262,11 @@ def main():
         # Ensures smoother UI and real‑time responsiveness.
 
     
+
+    st.divider()
+
     st.markdown("#### Workout History")
 
-    inject_webrtc_styles()
 
 
 
