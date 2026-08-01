@@ -33,6 +33,7 @@ from services.ui.style_loader import load_css, inject_local_font, inject_webrtc_
 from services.persistence.exercise_repository import init_db
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
 from services.vision.exercise_video_processor import VideoProcessorClass
+from services.tracking.metrics import sync_metrics_update
 
 
 # What is streamlit_webrtc? :-
@@ -249,6 +250,13 @@ def main():
             },
             async_processing=True
         )
+
+        sync_metrics_update(context)  # This function synchronizes the metrics update between the video processor and the Streamlit session state. It ensures that the latest exercise metrics (like reps, angles, and status) are reflected in the UI in real-time.
+
+        # Here we are checking if the video is playing (context.state.playing). If it is, we introduce a short delay of 0.25 seconds using time.sleep(0.25) to avoid overwhelming the UI with too many updates. After the delay, we call st.rerun() to refresh the Streamlit app, ensuring that the latest metrics are displayed in real-time.
+        if context.state.playing:
+            time.sleep(0.25)
+            st.rerun()
 
         inject_webrtc_styles()
 
