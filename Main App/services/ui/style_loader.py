@@ -103,14 +103,14 @@ def inject_webrtc_styles():
                 try {{
                     // Get the iframe's document object
                     const doc = iframe.contentDocument || iframe.contentWindow.document;
-                    if (!doc || !doc.head) return; // If no document/head, exit
+                    if (!doc || !doc.head) return;    // If no document/head, exit
 
                     // Prevent duplicate injection by checking if style already exists
                     if (doc.head.querySelector('#webrtc-custom-styles')) return;
 
-                    // Create a <style> element
+                    //  Create a <style> element
                     const style = doc.createElement('style');
-                    style.id = 'webrtc-custom-styles'; // Assign an ID for tracking
+                    style.id = 'webrtc-custom-styles';    // Assign an ID for tracking
 
                     // Define CSS rules including custom font and button styling
                     style.textContent = `
@@ -124,13 +124,13 @@ def inject_webrtc_styles():
                         .MuiButton-root,
                         .MuiButton-contained,
                         .MuiButton-text {{
-                            border-radius: 0 !important;              /* Remove rounded corners */
-                            font-family: 'AdobeClean', sans-serif !important; /* Apply custom font */
-                            letter-spacing: 0.05em !important;        /* Adjust spacing for readability */
+                            border-radius: 0 !important;             
+                            font-family: 'AdobeClean', sans-serif !important; 
+                            letter-spacing: 0.05em !important;        
                         }}
                     `;
 
-                    // Append the style element to the iframe's <head>
+                    //  Append the style element to the iframe's <head>
                     doc.head.appendChild(style);
                 }} catch (e) {{
                     // Log warning if injection fails
@@ -140,14 +140,14 @@ def inject_webrtc_styles():
 
             // Function to find all WebRTC iframes and patch them
             function findAndPatch() {{
-                const parentDoc = window.parent.document; // Get parent document
-                const iframes = parentDoc.querySelectorAll('iframe'); // Find all iframes
+                const parentDoc = window.parent.document;    //  Get parent document
+                const iframes = parentDoc.querySelectorAll('iframe');   // Find all iframes
 
                 // Loop through each iframe
                 iframes.forEach(iframe => {{
-                    // Only target iframes related to WebRTC
+                    //  Only target iframes related to WebRTC
                     if (iframe.src && iframe.src.includes('webrtc')) {{
-                        // If iframe is already loaded, inject immediately
+                        //  If iframe is already loaded, inject immediately
                         if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {{
                             injectIntoIframe(iframe);
                         }} else {{
