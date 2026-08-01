@@ -343,3 +343,55 @@ if __name__ == "__main__":
 # You require built‑in NAT traversal and encryption.
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# What is MediaPipe? :-
+# MediaPipe is a cross-platform framework developed by Google for building multimodal (video, audio, and sensor) applied machine learning pipelines. It provides pre-built models and tools for tasks like pose estimation, hand tracking, face detection, and object detection.
+
+# Mediapipe is an open-source, cross-platform framework developed by Google that provides ready-to-use, ML-powered solutions for live, on-device computer vision and audio, such as hand tracking, face landmark detection, and gesture recognition. 
+# It simplifies the process of building real-time applications that require understanding of visual and audio data.
+
+# It works with :
+# Video
+# Images
+# Live camera feeds
+
+# Used for :
+# Face detection
+# Hand tracking
+# Pose estimation
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# What is Pose Landmarker Model :-
+# Pose Landmarker is a model that detects human body keypoints (landmarks) from an image or video.
+
+# It can :
+# Detect body joints
+# Track movement
+# Understand posture
+
+# It works in images, video, or live stream
+
+# It returns Output as :
+# 2D coordinates of keypoints (x, y)  -->  position on screen
+# 3D coordinates of keypoints (x, y, z)  --> depth information
+# Optional segmentation masks for body parts
+
+# How it works :-
+# Step 1: Person Detection → Detects the person in the frame.
+# First model detects "is there a human?"
+
+# Step 2: Landmark Detection → Detects keypoints (like elbows, knees, shoulders) on the detected person.
+# Second model predicts the exact positions of body joints.
+
+
+# There are 33 keypoints (Body landmarks) in the Pose Landmarker model, including:
+# Examples: Nose, Eyes, Ears, Shoulders, Elbows, Wrists, Hips, Knees, Ankles, etc.
+
+
+# This Model hasVariants :-
+# Lite --> fast, less accurate, for mobile or low-power devices
+# Full --> balanced, slower, more accurate, for desktops or high-power devices
+# Heavy --> most accurate, slowest, for research or high-end GPUs
+
+# Here we will use this full variant of the model as we want more accuracy in our project
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
