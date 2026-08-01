@@ -22,6 +22,9 @@
 # Imports Python’s built-in OS module. Used here to check if the CSS file exists on disk (os.path.exists(file_path)).
 import os
 import streamlit as st
+import pandas as pd
+
+import time    # here we are importing time module to use sleep function actually, as we are using time.sleep() function in this file
 
 from services.auth.login_wall import render_login_wall
 from services.state.session_defaults import initial_session_defaults
@@ -113,13 +116,13 @@ def main():
         # Only show workout plan setup if workout has NOT started yet
         if not workout_started:
             # Dropdown menu to select exercise type from EXERCISE_OPTIONS list
-            st.selectbox("Exercise", options=EXERCISE_OPTIONS, key="plan_exercise")
+            plan_exercise = st.selectbox("Exercise", options=EXERCISE_OPTIONS, key="plan_exercise")
 
             # Numeric input for number of sets (0–50 allowed)
-            st.number_input("Sets", min_value=0, max_value=50, key="plan_sets", step=1)
+            plan_sets = st.number_input("Sets", min_value=0, max_value=50, key="plan_sets", step=1)
 
             # Numeric input for reps per set (0–50 allowed)
-            st.number_input("Reps per Set", min_value=0, max_value=50, key="plan_reps", step=1)
+            plan_reps = st.number_input("Reps per Set", min_value=0, max_value=50, key="plan_reps", step=1)
 
             # Blank space for layout spacing
             st.markdown("")
@@ -127,14 +130,23 @@ def main():
             start_session_button = st.button("Start Workout", width="stretch", key="start_session_button")
 
             if start_session_button:
-                st.session_state["workout_started"] = True
+                st.session_state.exercise_type = plan_exercise
+                st.session_state.target_sets = int(plan_sets)
+                st.session_state.reps_per_set = int(plan_reps)
+                st.session_state.reps = 0     # Reset total reps to 0 at the start of a new workout
+                st.session_state.workout_started = True
+                st.session_state.set_cycle_started_at = time.time()     # Record the timestamp when the workout starts (used for timing sets)
+                st.session_state.last_saved_sets_completed = 0    # Reset last saved sets completed to 0 at the start of a new workout
+                st.session_state.last_notified_sets_completed = 0    # Reset last notified sets completed to 0 at the start of a new workout
+                st.session_state.last_notified_workout_complete = False   # Reset last notified workout complete flag to False at the start of a new workout
+
                 # Force app rerun so UI updates to workout mode
                 st.rerun()
         else:
             # Retrieve the workout plan details from session_state
-            exercise = st.session_state.get("plan_exercise")   # The exercise chosen by the user
-            sets = st.session_state.get("plan_sets")           # Number of sets planned
-            reps = st.session_state.get("plan_reps")           # Number of reps per set planned
+            exercise = st.session_state.get("exercise_type")   # The exercise chosen by the user
+            sets = st.session_state.get("target_sets")           # Number of sets planned
+            reps = st.session_state.get("reps_per_set")           # Number of reps per set planned
 
             # Display the current workout plan in an info box
             st.info(f"**{exercise}** -- {sets} Sets x {reps} Reps")
@@ -142,7 +154,7 @@ def main():
             end_session_button = st.button("End Workout", key="end_session_button", width="stretch")
 
             if end_session_button:
-                st.session_state["workout_started"] = False
+                st.session_state.workout_started = False
                 st.rerun()    # Force the app to rerun so the UI switches back to workout setup mode
 
 
@@ -151,12 +163,12 @@ def main():
             st.divider()
 
            # Retrieve workout details from session_state
-            exercise = st.session_state.get("plan_exercise")       # Current exercise selected
+            exercise = st.session_state.get("exercise_type")       # Current exercise selected
             total_reps = st.session_state.get("reps")              # Total reps completed across all sets
             current_set_reps = st.session_state.get("current_set_reps")  # Reps done in the ongoing set
-            reps_per_set = st.session_state.get("plan_reps")       # Planned reps per set
+            reps_per_set = st.session_state.get("reps_per_set")       # Planned reps per set
             sets_completed = st.session_state.get("sets_completed")# Number of sets completed so far
-            target_sets = st.session_state.get("plan_sets")        # Planned total sets
+            target_sets = st.session_state.get("target_sets")        # Planned total sets
 
             # Section heading for progress tracking
             st.subheader("Progress")
@@ -261,7 +273,6 @@ def main():
         # Prevents blocking the main Streamlit thread while heavy ML/computer vision tasks run.
         # Ensures smoother UI and real‑time responsiveness.
 
-    
 
     st.divider()
 
