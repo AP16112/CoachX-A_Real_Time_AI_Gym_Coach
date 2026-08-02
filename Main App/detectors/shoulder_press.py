@@ -117,3 +117,6 @@ class ShoulderPressDetector(BaseExercise):
             "back_arch_status": back_arch_status,
         }
     
+
+
+    

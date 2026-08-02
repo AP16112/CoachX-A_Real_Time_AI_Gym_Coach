@@ -27,6 +27,7 @@ class LLMCoach:
             {"role": "system", "content": self.system_prompt},
             *self.history[-10:],    # We include the last 10 messages from history to maintain context for the LLM. This helps the model understand the flow of the conversation and provide more coherent feedback based on previous interactions.
             # Here * is used to unpack the last 10 messages from the history list and include them in the messages list. This ensures that the LLM has access to recent interactions, which can improve the relevance and accuracy of its responses.
+            # If we don't use this *, the LLM will not have context of the previous messages and will treat each prompt as a standalone request, which may lead to less coherent or relevant feedback.
             {"role": "user", "content": prompt}
         ]
 
