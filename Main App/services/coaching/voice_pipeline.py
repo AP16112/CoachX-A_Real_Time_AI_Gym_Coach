@@ -112,3 +112,5 @@ def autoplay_audio(audio_bytes):
     
     # Finally, we use Streamlit's st.audio function to play the provided audio bytes. We specify the format as "audio/mp3" and set autoplay to True, which means the audio will start playing automatically when this function is called. This provides immediate auditory feedback to the user based on the generated speech from the TTS component.
     st.audio(audio_bytes, format="audio/mp3", autoplay=True)
+
+

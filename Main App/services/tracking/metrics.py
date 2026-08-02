@@ -89,7 +89,60 @@ def sync_metrics_update(context):
         # Log the newly completed sets to the database for persistence. We call the add_exercise function with the user ID, exercise type, total reps for the newly completed sets, number of newly completed sets, and the time taken to complete those sets. This allows us to track user performance over time and provide insights into their workout progress.
         add_exercise(user_id, exercise, newly_completed * reps_per_set, newly_completed, time_taken)
 
+
+        # Here we check if the voice coaching pipeline is available in the session state. If it is, we call the process_event method of the voice pipeline to generate spoken feedback based on the current exercise and metrics. If feedback is generated, we store the audio bytes and text feedback in the session state for playback and display in the UI. This allows us to provide real-time auditory coaching to the user based on their performance and form during the workout.
+        if st.session_state.get("voice_pipeline"):
+            result = st.session_state.voice_pipeline.process_event(
+                event="set_completed",    # Here we are passing the event as "set_completed" to indicate that a set has just been completed. This allows the voice pipeline to generate feedback specific to the completion of a set, such as congratulating the user or providing form corrections based on the latest metrics.
+                exercise=exercise,
+                metrics=latest_metrics,
+            )
+
+            if result:
+                st.session_state.audio_to_play, st.session_state.coach_feedback = result
+
+
         # Now we update the session state to reflect the new timestamp for when the current set cycle started and the last saved sets completed. This ensures that we accurately track progress and can calculate time taken for future sets correctly.
         st.session_state.set_cycle_started_at = now_ts
         st.session_state.last_saved_sets_completed = sets_completed
+
+    
+    # Here we check if the workout has been completed and if we have not already notified the user about the workout completion. If the workout is complete and the user has not been notified, we set a flag in the session state to indicate that the notification has been sent. We then call the process_event method of the voice pipeline to generate spoken feedback for the workout completion event. If feedback is generated, we store the audio bytes and text feedback in the session state for playback and display in the UI. This allows us to provide real-time auditory coaching to the user upon completing their workout.
+    if workout_completed and not st.session_state.get("last_notified_workout_complete", False):
+        st.session_state.last_notified_workout_complete = True
+
+        if st.session_state.get("voice_pipeline"):
+            result = st.session_state.voice_pipeline.process_event(
+                event="workout_completed",
+                exercise=exercise,
+                metrics=latest_metrics,
+            )
+
+            if result:
+                st.session_state.audio_to_play, st.session_state.coach_feedback = result
+                
+    # Here we check if the pose is detected in the latest metrics. If no pose is detected and the voice pipeline is available, we call the process_event method of the voice pipeline to generate spoken feedback indicating that no pose was detected and prompting the user to step into the camera frame. If feedback is generated, we store the audio bytes and text feedback in the session state for playback and display in the UI. This allows us to provide real-time auditory coaching to the user when their pose is not detected during a workout session.
+    pose_detected = latest_metrics.get("pose_detected", True)
+    
+    if not pose_detected and st.session_state.get("voice_pipeline"):
+        result = st.session_state.voice_pipeline.process_event(
+            event="no_pose_detected",
+            exercise=exercise,
+            metrics={"issue": "No pose detected! Please step into the camera frame."},
+        )
+    
+        if result:
+            st.session_state.audio_to_play, st.session_state.coach_feedback = result
+
+    # Here we check if the voice pipeline is available in the session state. If it is, we call the process_event method of the voice pipeline to generate spoken feedback for ongoing form checks during the workout. This allows us to provide real-time auditory coaching to the user based on their performance and form during the workout session.
+    if st.session_state.get("voice_pipeline"):
+        result = st.session_state.voice_pipeline.process_event(
+            event="ongoing_form_check",
+            exercise=exercise,
+            metrics=latest_metrics,
+        )
+        
+        if result:
+            st.session_state.audio_to_play, st.session_state.coach_feedback = result
+
 
