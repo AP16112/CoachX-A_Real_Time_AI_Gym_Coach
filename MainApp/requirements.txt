@@ -7,12 +7,15 @@ mediapipe==0.10.14
 opencv-python-headless==4.10.0.84
 
 pandas==2.2.3
+numpy==2.5.1
 
 groq>=0.12.0
 
 gtts==2.5.3
+sounddevice==0.5.5
 
 python-dotenv==1.2.2
+protobuf==4.25.9
 
 
 
@@ -20,7 +23,7 @@ python-dotenv==1.2.2
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Here we need to use packages.txt & in that we need to write these :-
 # libgl1
-# libglib2.0-0t64
+# libglib2.0-0
 # libsm6
 # libxext6
 # Because these are the dependencies of OpenCV library which we are using in this project. If we don't write these dependencies in packages.txt file then our deployment will fail because OpenCV will not work properly without these dependencies.
