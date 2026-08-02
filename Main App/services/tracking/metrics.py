@@ -1,8 +1,10 @@
 # Here in this file, we will define a function to synchronize the latest workout metrics from the video processor to the Streamlit session state. This ensures that the UI reflects the most up-to-date information about reps, sets, and exercise form feedback during a workout session.
 
 import streamlit as st
+import time
 
 from services.config.workout_config import METRICS_FIELDS
+from services.persistence.exercise_repository import add_exercise
 
 
 # The sync_metrics_update function takes a context object (which contains the video processor and state information) and updates the Streamlit session state with the latest metrics for the current exercise. It checks if the workout is active, retrieves the latest metrics from the video processor, and updates relevant session state variables such as reps, sets completed, and form feedback fields.
@@ -73,6 +75,21 @@ def sync_metrics_update(context):
     st.session_state.current_set_reps = current_set_reps
     st.session_state.workout_completed = workout_completed
 
-    
+    # Here we check if the number of sets completed has increased since the last time we saved it. If so, we calculate how many new sets have been completed, the time taken for those sets, and log this information to the database using the add_exercise function. We also update the timestamp for when the current set cycle started and the last saved sets completed in the session state. This ensures that we persist progress data accurately and can track user performance over time.
+    last_saved_sets = st.session_state.get("last_saved_sets_completed", 0)
 
-  
+    # If the user has completed new sets since the last save, we log the exercise data to the database. We calculate how many new sets have been completed, the time taken for those sets, and call the add_exercise function to persist this information. We also update the timestamp for when the current set cycle started and the last saved sets completed in the session state. This ensures that we accurately track user progress and can provide meaningful feedback on their workout performance.
+    if target_sets > 0 and reps_per_set > 0 and sets_completed > last_saved_sets:
+        newly_completed = sets_completed - last_saved_sets
+        now_ts = time.time()    # Get the current timestamp to calculate the time taken for the newly completed sets. This timestamp will be used to determine how long it took the user to complete the new sets since the last save.  
+        started_at = st.session_state.get("set_cycle_started_at", now_ts)
+        time_taken = now_ts - started_at
+        user_id = st.session_state.get("user_id", 0)
+
+        # Log the newly completed sets to the database for persistence. We call the add_exercise function with the user ID, exercise type, total reps for the newly completed sets, number of newly completed sets, and the time taken to complete those sets. This allows us to track user performance over time and provide insights into their workout progress.
+        add_exercise(user_id, exercise, newly_completed * reps_per_set, newly_completed, time_taken)
+
+        # Now we update the session state to reflect the new timestamp for when the current set cycle started and the last saved sets completed. This ensures that we accurately track progress and can calculate time taken for future sets correctly.
+        st.session_state.set_cycle_started_at = now_ts
+        st.session_state.last_saved_sets_completed = sets_completed
+

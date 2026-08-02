@@ -34,6 +34,8 @@ from services.persistence.exercise_repository import init_db
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
 from services.vision.exercise_video_processor import VideoProcessorClass
 from services.tracking.metrics import sync_metrics_update
+from services.persistence.exercise_repository import get_users_exercises
+
 
 
 # What is streamlit_webrtc? :-
@@ -286,8 +288,49 @@ def main():
 
     st.markdown("#### Workout History")
 
+    user_id = st.session_state.get("user_id", 0)
 
+    # Here we are checking if the user_id is an integer (which means a valid user is logged in). If it is, we retrieve the user's exercise history from the database using get_users_exercises(user_id). We then format this data into a list of dictionaries, convert it into a Pandas DataFrame, and display it as a table in the Streamlit app. If no history is found, we show an informational message to the user.
+    if isinstance(user_id, int):    # Check if user_id is a valid integer (i.e., a logged-in user). If not, we skip fetching history.
+        history_rows = get_users_exercises(user_id)
 
+        # Here we are creating a list of dictionaries (df_arr) where each dictionary represents a workout entry. We extract relevant fields from each row of the user's exercise history, such as exercise name, reps, sets, time taken, and the date it was created. This structured format makes it easy to convert into a Pandas DataFrame for display in the Streamlit app.
+        df_arr = [
+            {
+                "Exercise": row['exercise_name'],
+                "Reps": row['reps'],
+                "Sets": row['sets'],
+                "Time (sec)": row['time'],
+                "Date": row['created_at']
+            }
+            for row in history_rows
+        ]
+
+        # Here we are converting the list of dictionaries (df_arr) into a Pandas DataFrame (df). This allows us to easily manipulate and display the workout history data in a tabular format within the Streamlit app. If the DataFrame is not empty, we proceed to process and display the data; otherwise, we inform the user that no workout history was found.
+        df = pd.DataFrame(df_arr)
+
+        if not df.empty:
+            # Here we are converting the "Date" column in the DataFrame (df) to a datetime format using pd.to_datetime(). We then extract only the date part (year-month-day) using .dt.date. This ensures that the date is displayed in a clean format without extra time information, making it easier for users to read their workout history.
+            df["Date"] = pd.to_datetime(df["Date"]).dt.date
+            
+            # Now we are grouping the DataFrame (df) by "Exercise" and "Date" using df.groupby(). We then aggregate the grouped data to calculate the total "Reps", "Sets", and "Time (sec)" for each exercise on each date. The result is reset to a new DataFrame (agg_df) with a clean index. Finally, we increment the index by 1 for better readability and display the aggregated workout history as a table in the Streamlit app.
+            # For example, if a user did 3 sets of squats on 2024-06-01 and 2 sets on 2024-06-02, this aggregation will show the total reps, sets, and time for each date separately.
+            # But if the user did multiple exercises on the same date, each exercise will have its own row in the aggregated table, allowing users to see a clear breakdown of their workout history.
+            agg_df = df.groupby(["Exercise", "Date"]).agg({
+                "Reps": 'sum',   
+                "Sets": "sum",
+                "Time (sec)": "sum"
+            }).reset_index()
+            # Here we are using 'sum' to calculate the total number of reps for each exercise on each date. This means if a user performed multiple sets of the same exercise on the same day, all those reps will be added together to give a cumulative total for that exercise on that date.
+            # Here reset_index() is used to convert the grouped DataFrame back into a regular DataFrame with a default integer index. This makes it easier to display the data in a tabular format in the Streamlit app, as we can now access the rows by their integer index rather than a multi-level index created by the groupby operation.
+
+            # Here we are incrementing the index of the aggregated DataFrame (agg_df) by 1. This is done to make the index more user-friendly when displayed in the Streamlit app. Instead of starting from 0 (which is common in programming), the index will start from 1, making it easier for users to read and understand their workout history table.
+            agg_df.index += 1
+
+            # Here we are displaying the aggregated workout history DataFrame (agg_df) as a table in the Streamlit app using st.table(). The border="horizontal" argument adds horizontal lines between rows for better readability. This allows users to easily view their past workouts, including the total reps, sets, and time taken for each exercise on each date.
+            st.table(agg_df, border="horizontal")
+        else:
+            st.info("No workout history found.")
 
 
 
