@@ -4,9 +4,8 @@
 # So we will write the actual logic for processing video frames, detecting poses, and analyzing exercise performance in real-time. The VideoProcessorClass will handle the integration with MediaPipe's PoseLandmarker model and use specific exercise detectors to evaluate form and count repetitions.
 
 
-# Provides functions for interacting with the operating system.
-# Common uses: file path handling, environment variables, directory operations.
-import os
+# Provides tools for building reliable file paths.
+from pathlib import Path
 
 # cv2 (OpenCV) :-
 # Popular computer vision library. Used for image/video processing: reading frames, drawing landmarks, applying filters, etc.
@@ -64,16 +63,19 @@ class VideoProcessorClass(VideoProcessorBase):
         self._exercise_type = "Squats"    # Default exercise type being tracked. Can be changed later depending on user selection (e.g., PushUps, Lunges).
 
         # Load the MediaPipe PoseLandmarker model for real-time pose detection.
-        # Build the full path to the pose landmark model file
-        # os.getcwd() → current working directory
-        # "ml_models/pose_landmarker_full.task" → relative path to the model file
-        # os.path.join ensures the path is constructed correctly across operating systems
-        model_path = os.path.join(os.getcwd(), "ml_models", "pose_landmarker_full.task")
+        # Build the full path to the pose landmark model file from the MainApp directory.
+        # Streamlit Cloud may start the app from the repository root, so the current
+        # working directory is not reliable for locating bundled model files.
+        app_dir = Path(__file__).resolve().parents[2]
+        # Here we are constructing the full path to the MediaPipe pose_landmarker_full.task model file. We start from the current file's directory (__file__), resolve it to an absolute path, and then navigate up two levels (parents[2]) to reach the MainApp directory. From there, we append "ml_models/pose_landmarker_full.task" to get the complete path to the model file. This ensures that we can reliably locate the model file regardless of where the app is run from, which is important for deployment in environments like Streamlit Cloud.
+        # The pose_landmarker_full.task file is a pre-trained MediaPipe model that can detect
+
+        model_path = app_dir / "ml_models" / "pose_landmarker_full.task"
         
         # Create a BaseOptions object for MediaPipe Tasks
         # This tells MediaPipe where to find the model asset (the .task file)
         # BaseOptions is the standard way to configure model loading in the new Tasks API
-        base_option = python.BaseOptions(model_asset_path=model_path)
+        base_option = python.BaseOptions(model_asset_path=str(model_path))
         # So now this base_option object contains the path to the pose_landmarker_full.task model file, which will be used to initialize the PoseLandmarker for real-time pose detection in video frames.
 
 
