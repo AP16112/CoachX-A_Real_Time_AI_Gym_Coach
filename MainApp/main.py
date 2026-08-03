@@ -157,6 +157,7 @@ def main():
         layout="centered"
     )
 
+    # Here we are injecting custom CSS styles into the Streamlit app using st.markdown(). The CSS imports two Google Fonts: "Fugaz One" for headings (h1, h2, h3) and "Outfit" for the body text. It then applies the "Outfit" font to the entire HTML body and all Streamlit-generated elements (identified by [class*="css"]). The headings are styled with the "Fugaz One" font. The unsafe_allow_html=True parameter allows raw HTML and CSS to be rendered in the Streamlit app, enabling custom styling beyond the default Streamlit appearance.
     st.markdown(
     """
         <style>
@@ -417,7 +418,6 @@ def main():
             time.sleep(0.25)
             st.rerun()
 
-        # inject_webrtc_styles()
 
         # video_processor_factory=VideoProcessorClass :-
         # Connects a custom Python class that processes video frames.
