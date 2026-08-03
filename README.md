@@ -206,20 +206,18 @@ CoachX/
 
 ## Important Files
 
-| File / Folder | Purpose |
-|---|---|
-| [MainApp/main.py](MainApp/main.py) | Main Streamlit entry point and app orchestration |
-| [MainApp/services/vision/exercise_video_processor.py](MainApp/services/vision/exercise_video_processor.py) | Real-time video frame processing, pose detection, and overlay drawing |
-| [MainApp/services/coaching/voice_pipeline.py](MainApp/services/coaching/voice_pipeline.py) | AI coaching logic that turns metrics into spoken feedback |
-| [MainApp/services/coaching/llm.py](MainApp/services/coaching/llm.py) | Groq-based LLM response generation for workout cues |
-| [MainApp/services/coaching/tts.py](MainApp/services/coaching/tts.py) | Google Text-to-Speech audio generation |
-| [MainApp/services/persistence/exercise_repository.py](MainApp/services/persistence/exercise_repository.py) | SQLite persistence for user sessions and exercise history |
-| [MainApp/services/config/workout_config.py](MainApp/services/config/workout_config.py) | Exercise list, metrics schema, and prompt configuration |
-| [MainApp/ml_models/pose_landmarker_full.task](MainApp/ml_models/pose_landmarker_full.task) | MediaPipe pose landmark model asset |
-| [LandingPage/index.html](LandingPage/index.html) | Landing page markup and call-to-action content |
-| [LandingPage/style.css](LandingPage/style.css) | Landing page styling |
-| [MainApp/requirements.txt](MainApp/requirements.txt) | Python dependency list for the app |
-| [packages.txt](packages.txt) | OS-level deployment packages for OpenCV-related runtime support |
+- `MainApp/main.py` - Streamlit app entrypoint and orchestration logic
+- `MainApp/services/vision/exercise_video_processor.py` - real-time video frame processing, pose detection, and overlay drawing
+- `MainApp/services/coaching/voice_pipeline.py` - AI coaching logic that turns metrics into spoken feedback
+- `MainApp/services/coaching/llm.py` - Groq-based LLM response generation for workout cues
+- `MainApp/services/coaching/tts.py` - Google Text-to-Speech audio generation
+- `MainApp/services/persistence/exercise_repository.py` - SQLite persistence for user sessions and exercise history
+- `MainApp/services/config/workout_config.py` - exercise list, metrics schema, and prompt configuration
+- `MainApp/ml_models/pose_landmarker_full.task` - MediaPipe pose landmark model asset
+- `LandingPage/index.html` - landing page markup and call-to-action content
+- `LandingPage/style.css` - landing page styling
+- `MainApp/requirements.txt` - Python dependency list for the app
+- `packages.txt` - OS-level deployment packages for OpenCV-related runtime support
 
 ## How It Works
 
@@ -279,14 +277,14 @@ cd CoachX
 On Windows:
 
 ```bash
-py -3.11 -m venv venv
+py -3.12 -m venv venv
 venv\Scripts\activate
 ```
 
 On Linux or macOS:
 
 ```bash
-python3.11 -m venv venv
+python3.12 -m venv venv
 source venv/bin/activate
 ```
 
