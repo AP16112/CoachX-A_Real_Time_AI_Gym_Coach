@@ -1,4 +1,4 @@
-# CoachX: A Real-time AI Gym Coach
+# CoachX : A Real-time AI Gym Coach
 
 ![Platform](https://img.shields.io/badge/Platform-Web-blue)
 ![Frontend](https://img.shields.io/badge/Frontend-Streamlit-red)
@@ -19,16 +19,11 @@ At a high level, the project combines:
 - Google Text-to-Speech to speak those instructions back to the user
 - SQLite to persist user sessions and workout history
 
-This makes CoachX a practical example of an AI fitness assistant built around live computer vision and conversational feedback.
-
 ---
 
 ## 🚀 Live Demo
 
-- Main App: https://coachx-real-time-ai-gym-coach.streamlit.app/
-- Landing Page: https://coachx-real-time-ai-gym-coach.streamlit.app/ (same product page presented in the repository landing section)
-
-The main application is built for live use in a browser with webcam support and is designed for easy deployment through Streamlit.
+- CoachX WebApp: https://coachx-landing-page.netlify.app
 
 ---
 
@@ -154,7 +149,7 @@ This is why the app is not just a camera feed; it is a real-time inference and c
 
 ### Home / Product Landing Page
 
-The repository includes a landing page with a product-style hero, gallery visuals, video section, and contact CTA in [LandingPage/index.html](LandingPage/index.html).
+
 
 ### Main App Experience
 
