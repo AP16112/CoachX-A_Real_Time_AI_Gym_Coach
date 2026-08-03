@@ -157,12 +157,30 @@ def main():
         layout="centered"
     )
 
+    st.markdown(
+    """
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fugaz+One&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+        html, body, [class*="css"] {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Fugaz One', cursive;
+        }
+        </style>
+    """,
+        unsafe_allow_html=True
+    )
+
 
     # os.getcwd() :- Returns the current working directory (the folder where your app is running).
     # os.path.join(os.getcwd(), "static", "style.css")  :- Joins the current directory with "static/style.css". This builds a full file path to your CSS file inside a static folder.
     # load_css(...) :- Calls our helper function load_css (which you defined earlier).
     # That function: Checks if the file exists. Reads the CSS file. Injects its contents into your Streamlit app using st.markdown("<style>...</style>").
-    load_css(os.path.join(os.getcwd(), "static", "style.css"))
+    # load_css(os.path.join(os.getcwd(), "static", "style.css"))
     
     # os.path.join(os.getcwd(), "static", "AdobeClean.otf") :- Builds the full path to the font file inside our static folder.
     # Example result: /Users/Arpit/Projects/CoachX/static/AdobeClean.otf.
@@ -170,7 +188,7 @@ def main():
     # Parameters: Font path → the actual file location of AdobeClean.otf.
     # Font name → the name we want to assign in CSS ("AdobeClean").
     # Inside the function: Reads the font file in binary. Encodes it as Base64. Injects it into your Streamlit app via a CSS @font-face rule.
-    inject_local_font(os.path.join(os.getcwd(), "static", "AdobeClean.otf"), "AdobeClean")
+    # inject_local_font(os.path.join(os.getcwd(), "static", "AdobeClean.otf"), "AdobeClean")
 
 
     init_db()      # we are initializing the db i.e created the DB tables
@@ -399,7 +417,7 @@ def main():
             time.sleep(0.25)
             st.rerun()
 
-        inject_webrtc_styles()
+        # inject_webrtc_styles()
 
         # video_processor_factory=VideoProcessorClass :-
         # Connects a custom Python class that processes video frames.
