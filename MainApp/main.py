@@ -23,6 +23,7 @@
 import os
 import streamlit as st
 import pandas as pd
+from dotenv import load_dotenv
 
 import time    # here we are importing time module to use sleep function actually, as we are using time.sleep() function in this file
 
@@ -40,6 +41,23 @@ from groq import Groq # Here This is a Python client library for interacting wit
 from services.coaching.llm import LLMCoach
 from services.coaching.tts import TextToSpeech
 from services.coaching.voice_pipeline import VoicePipeline, autoplay_audio  
+
+
+# Here we are loading environment variables from a .env file located in the same directory as this main.py file. The load_dotenv function reads the .env file and sets the environment variables so they can be accessed using os.environ.get(). This is useful for storing sensitive information like API keys, database credentials, or configuration settings without hardcoding them into the source code.
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+
+
+# Here we are defining a helper function get_config_value(name) that retrieves configuration values from either environment variables or Streamlit's secrets management. It first checks if the value exists in the environment variables using os.environ.get(name). If found, it returns that value. If not, it attempts to fetch the value from Streamlit's secrets (st.secrets.get(name)). If neither source provides the value, it returns None. This function allows for flexible configuration management, enabling sensitive information to be securely stored and accessed without hardcoding it into the application.
+def get_config_value(name):
+    value = os.environ.get(name)
+    if value:
+        return value
+
+    try:
+        # Here we are checking if the Streamlit secrets management is available (hasattr(st, "secrets")). If it is, we attempt to retrieve the configuration value using st.secrets.get(name). This allows us to securely access sensitive information like API keys or credentials that are stored in Streamlit's secrets management system. If the value is found, it is returned; otherwise, None is returned.
+        return st.secrets.get(name, None)
+    except Exception:
+        return None
 
 
 
@@ -67,6 +85,39 @@ from services.coaching.voice_pipeline import VoicePipeline, autoplay_audio
 # Example: Video chat app — both sides send and receive audio/video.
 # DATA → Data channel only (no audio/video).
 # Example: Real‑time messaging or sending sensor data.
+
+
+
+
+# Here this fn get_rtc_configuration() is responsible for configuring the ICE servers used in WebRTC connections. It first sets up a default STUN server (stun:stun.l.google.com:19302) to help peers discover their public IP addresses. Then, it checks for TURN server credentials (TURN_URLS, TURN_USERNAME, TURN_CREDENTIAL) from environment variables or Streamlit secrets. If TURN credentials are provided, it adds them to the ICE servers list. Finally, it returns a dictionary containing the configured ICE servers, which is used by the webrtc_streamer component to establish reliable peer-to-peer connections for video streaming.
+def get_rtc_configuration():
+    ice_servers = [{"urls": ["stun:stun.l.google.com:19302"]}]
+
+    turn_urls = get_config_value("TURN_URLS")
+    turn_username = get_config_value("TURN_USERNAME")
+    turn_credential = get_config_value("TURN_CREDENTIAL")
+
+    if turn_urls and turn_username and turn_credential:
+        if isinstance(turn_urls, str):
+            turn_urls = [url.strip() for url in turn_urls.split(",") if url.strip()]
+
+        ice_servers.append(
+            {
+                "urls": turn_urls,
+                "username": turn_username,
+                "credential": turn_credential,
+            }
+        )
+
+    # Here we are returning a dictionary with the key "iceServers" and its value set to the list of ICE servers we configured. This dictionary is used by the WebRTC connection to establish peer-to-peer communication between the browser and the Streamlit backend. The ICE servers help in NAT traversal, allowing the peers to discover their public IP addresses and relay media streams if direct connections fail.
+    return {"iceServers": ice_servers}
+
+
+# What TURN :-
+# WebRTC tries to connect your browser camera to the Streamlit server using ICE servers.
+# STUN = tries to find a direct connection
+# TURN = relays the video if direct connection fails
+# We already have STUN. TURN is only needed when networks/firewalls block the direct WebRTC route.
 
 
 
@@ -305,7 +356,7 @@ def main():
             mode=WebRtcMode.SENDRECV,
 
             video_processor_factory=VideoProcessorClass,     # This parameter connects a custom Python class (VideoProcessorClass) that processes video frames. It allows you to run pose detection, exercise form analysis, or ML models on each frame captured from the webcam. Streamlit passes frames from the webcam → your class → processed output → back to the browser.
-            rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+            rtc_configuration=get_rtc_configuration(),
             media_stream_constraints={
                 "video": True,
                 "audio": False
