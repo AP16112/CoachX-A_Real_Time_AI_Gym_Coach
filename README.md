@@ -3,7 +3,7 @@
 ![Platform](https://img.shields.io/badge/Platform-Web-blue)
 ![Frontend](https://img.shields.io/badge/Frontend-Streamlit-red)
 ![AI](https://img.shields.io/badge/AI-MediaPipe%20%2B%20Groq-purple)
-![Language](https://img.shields.io/badge/Language-Python%203.11-yellow)
+![Language](https://img.shields.io/badge/Language-Python%203.12-yellow)
 ![Storage](https://img.shields.io/badge/Storage-SQLite-green)
 ![Status](https://img.shields.io/badge/Status-Live-success)
 
