@@ -230,8 +230,13 @@ def main():
     with st.sidebar:
         st.title("🏋️‍♂️CoachX : A Real-time AI Gym Coach")
 
+        # if st.session_state.username:
+        #     st.caption(f"👤 Login as {st.session_state.username}")
         if st.session_state.username:
-            st.caption(f"👤 Login as {st.session_state.username}")
+            st.markdown(
+                f'👤 Login as <span style="color: yellow;">{st.session_state.username}</span>',
+                unsafe_allow_html=True
+            )
 
         st.divider()
 
