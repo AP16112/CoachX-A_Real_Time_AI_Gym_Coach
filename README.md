@@ -147,9 +147,23 @@ This is why the app is not just a camera feed; it is a real-time inference and c
 
 ## Demo
 
-### Home / Product Landing Page
+### CoachX Landing Page
 
+![CoachX Landing Page 1](assets/CoachX_landing_page1.png)
 
+![CoachX Landing Page 2](assets/CoachX_landing_page2.png)
+
+### CoachX App Login
+
+![CoachX App Login](assets/CoachX_login.png)
+
+### CoachX App Home
+
+![CoachX App Home](assets/CoachX_home.png)
+
+### CoachX App Exercise Demo
+
+![CoachX App Exercise Demo](assets/CoachX_exercise_demo.png)
 
 ### Main App Experience
 
