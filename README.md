@@ -47,6 +47,8 @@ This makes the project useful for:
 - Streamlit + WebRTC experiments
 - voice-assisted interactive coaching experiences
 
+---
+
 ## Why This Project
 
 Traditional gym coaching is expensive, hard to scale, and often inconsistent. Many users want instant, on-demand feedback while exercising, especially when they are training alone.
@@ -60,6 +62,8 @@ CoachX addresses this by combining:
 
 This creates a practical demo of how AI can support training quality and motivation in real time.
 
+---
+
 ## Problem Statement
 
 People training solo often struggle with:
@@ -70,6 +74,8 @@ People training solo often struggle with:
 - no structured workout progress tracking
 
 CoachX solves this by creating a browser-based coaching assistant that monitors the user’s movement, gives real-time corrections, and keeps their workout logs.
+
+---
 
 ## What The Project Does
 
@@ -89,6 +95,8 @@ The application supports:
 - workout history tracking and aggregation per user
 - a separate marketing-style landing page for product presentation
 
+---
+
 ### What WebRTC Is and How It Works in This Project
 
 WebRTC stands for Web Real-Time Communication. It is a browser-based protocol and API stack used for transmitting audio, video, and data in real time with very low latency. In this project, WebRTC is used to connect the user’s webcam to the Streamlit frontend and then pass the video frames into the Python backend for computer vision analysis.
@@ -102,6 +110,8 @@ In practice, the flow looks like this:
 5. The processed output is sent back to the Streamlit UI for live visualization.
 
 This matters because the app needs frame-by-frame analysis rather than a delayed or upload-based workflow. WebRTC gives the system the fast path required for real-time inference.
+
+---
 
 ### Machine Learning Model Used
 
@@ -118,6 +128,8 @@ The model works in `VIDEO` mode, which is ideal for a live camera workflow. In t
 
 The key idea is that the model does not directly tell the app whether the exercise is correct. Instead, it provides the geometry of the pose. That geometry is then interpreted by custom detector logic for each exercise.
 
+---
+
 ### How the ML Model Is Used Here
 
 Once the landmark coordinates are available, the project performs a second layer of logic:
@@ -133,6 +145,7 @@ So the pipeline is:
 
 This is why the app is not just a camera feed; it is a real-time inference and coaching system.
 
+---
 
 ## Key Features
 
@@ -144,6 +157,8 @@ This is why the app is not just a camera feed; it is a real-time inference and c
 - Workout history persistence in SQLite
 - User session handling for personalized workout progress
 - Responsive product landing page in HTML/CSS
+
+---
 
 ## Demo
 
@@ -167,6 +182,8 @@ This is why the app is not just a camera feed; it is a real-time inference and c
 
 ### Main App Experience
 
+---
+
 The main app offers:
 
 - side-panel workout planning
@@ -174,6 +191,8 @@ The main app offers:
 - real-time metrics such as reps, sets, and posture status
 - AI coach feedback shown in the UI and spoken aloud
 - per-user history table for past sessions
+
+---
 
 ## Tech Stack
 
@@ -189,6 +208,8 @@ The main app offers:
 - gTTS
 - Python-dotenv
 - HTML/CSS
+
+---
 
 ## Project Structure
 
@@ -217,7 +238,7 @@ CoachX/
 |   |   |-- tracking/
 |   |   |-- vision/
 ```
-
+---
 ## Important Files
 
 - `MainApp/main.py` - Streamlit app entrypoint and orchestration logic
@@ -233,6 +254,8 @@ CoachX/
 - `MainApp/requirements.txt` - Python dependency list for the app
 - `packages.txt` - OS-level deployment packages for OpenCV-related runtime support
 
+---
+
 ## How It Works
 
 1. A user enters a unique username and starts a session.
@@ -246,6 +269,7 @@ CoachX/
 9. The LLM generates short coaching text and the text-to-speech layer speaks it back to the user.
 10. Workout progress is persisted in SQLite and shown in the history table for the logged-in user.
 
+--- 
 ### How the Database Is Used Here
 
 The database layer is implemented through SQLite and is centered in [MainApp/services/persistence/exercise_repository.py](MainApp/services/persistence/exercise_repository.py).
@@ -265,6 +289,8 @@ The runtime flow is simple:
 
 So the database is not the core ML component; it is the persistence layer that keeps the coaching experience personal and trackable across sessions.
 
+--- 
+
 ## Exercise Detection Pipeline
 
 The live analysis uses a per-exercise detector architecture:
@@ -276,6 +302,8 @@ The live analysis uses a per-exercise detector architecture:
 - Lunge detector checks front knee angle, torso angle, and balance
 
 These detectors feed real-time metrics into the coaching layer that decides whether the user needs a motivational or corrective cue.
+
+--- 
 
 ## Setup Instructions
 
@@ -334,12 +362,16 @@ streamlit run main.py
 
 Open the HTML landing page directly in a browser, or serve it from a lightweight static server if needed.
 
+--- 
+
 ## Deployment Notes
 
 - The main app is designed for Streamlit deployment.
 - The landing page is a static HTML/CSS experience.
 - `packages.txt` contains required OS packages such as OpenCV runtime libraries for deployment environments.
 - A local `.env` file is used for development credentials and is intentionally excluded from version control via `.gitignore`.
+
+---
 
 ## Strengths
 
@@ -349,12 +381,16 @@ Open the HTML landing page directly in a browser, or serve it from a lightweight
 - Workout progress is preserved in a lightweight local database
 - Modular service structure makes it easy to extend
 
+---
+
 ## Limitations
 
 - Real-world accuracy depends on camera quality, lighting, and user framing
 - Voice feedback depends on external API availability
 - The project is better suited for demos and prototypes than large-scale production use
 - Exercise detection is calibrated around the selected supported movement set
+
+---
 
 ## Future Improvements
 
@@ -365,6 +401,8 @@ Open the HTML landing page directly in a browser, or serve it from a lightweight
 - improve audio feedback UX and cooldown management
 - add automated tests and CI for app reliability
 - package the landing page and main app into a more unified deployment flow
+
+---
 
 ## Learning Outcomes
 
