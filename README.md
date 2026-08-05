@@ -180,9 +180,10 @@ This is why the app is not just a camera feed; it is a real-time inference and c
 
 ![CoachX App Exercise Demo](assets/CoachX_exercise_demo.png)
 
-### Main App Experience
 
 ---
+
+### Main App Experience
 
 The main app offers:
 
